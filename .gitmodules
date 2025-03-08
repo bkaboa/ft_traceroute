@@ -1,0 +1,3 @@
+[submodule "my_42_lib"]
+	path = my_42_lib
+	url = git@github.com:bkaboa/my_42_lib.git
