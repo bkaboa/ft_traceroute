@@ -1,2 +1,7 @@
+*.o
+ft_traceroute
+
 my_42_lib/
 .vscode/
+
+build/
