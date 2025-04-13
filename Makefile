@@ -1,14 +1,17 @@
 NAME	:= ft_traceroute
 
 SRC		:=	src/main.c \
-			src/utils.c
+			src/utils.c \
+			src/packetManager.c \
+			src/socketManager.c \
+			src/traceroute.c
 
 BUILD_DIR	:= build
 
 OBJ		:= $(addprefix $(BUILD_DIR)/,$(SRC:.c=.o))
 
 CC		:= gcc
-CFLAGS	:= #-Wall -Wextra -Werror
+CFLAGS	:= -Wall -Wextra #-Werror
 
 LIB_PATH	:= my_42_lib/lib
 
@@ -16,7 +19,7 @@ LOGGER_LIB	:= ${LIB_PATH}/liblogger.a
 OPT_LIB		:= ${LIB_PATH}/libopt.a
 FT_LIB		:= ${LIB_PATH}/libft.a
 
-HEADERS	:= include/ft_traceroute.h
+HEADERS	:= include/traceroute.h
 
 LIBS := -L${LIB_PATH} -lopt -lft -llogger
 
@@ -26,11 +29,11 @@ create_dir:
 	@mkdir -p $(BUILD_DIR)
 
 $(NAME): $(OBJ) $(LOGGER_LIB) $(OPT_LIB) $(FT_LIB)
-	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
+	$(CC) $(CFLAGS) -o $@ $^ $(LIBS) -I include -I my_42_lib
 
-$(BUILD_DIR)/%.o: %.c
+$(BUILD_DIR)/%.o: %.c $(HEADERS)
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -c -o $@ $^ -I include -I my_42_lib
+	$(CC) $(CFLAGS) -c -o $@ $< -I include -I my_42_lib
 
 libs:
 	@make -C my_42_lib/build
