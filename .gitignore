@@ -1,5 +1,7 @@
 *.o
 ft_traceroute
+a.out
+test*
 
 my_42_lib/
 .vscode/

@@ -36,7 +36,7 @@
 # define TRACEROUTE_DEFAULT_PACKET_COUNT 3
 # define TRACEROUTE_DEFAULT_PACKET_SIZE 64
 # define TRACEROUTE_SRC_PORT "80"
-# define TRACEROUTE_DEFAULT_TIMEOUT 1
+# define TRACEROUTE_DEFAULT_TIMEOUT 100000
 # define TRACEROUTE_DEFAULT_MAX_TTL 64
 # define TRACEROUTE_DEFAULT_MIN_TTL 1
 # define TRACEROUTE_DEFAULT_PORT 33434
@@ -104,7 +104,7 @@ typedef struct {
     t_data              packet_send[TRACEROUTE_DEFAULT_PACKET_SIZE];
 } t_traceroute;
 
-typedef void (*forge_packet_func)(t_traceroute *traceroute);
+typedef int (*forge_packet_func)(t_traceroute *traceroute, struct sockaddr *addr);
 
 typedef struct {
     size_t              size;

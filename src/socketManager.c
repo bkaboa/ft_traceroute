@@ -24,7 +24,7 @@ int init_socket4(t_traceroute *traceroute) {
     hints.ai_family = AF_INET;
 
     if (getaddrinfo(traceroute->traceroute_data.hostname, service, &hints, &res) != 0) {
-        logger->log(E_LOG_ERROR, true, "getaddrinfo: %s: %s\n", traceroute->traceroute_data.hostname, gai_strerror(errno));
+        logger->log(E_LOG_ERROR, true, "getaddrinfo: %s: %s\n", traceroute->traceroute_data.hostname, "error");
         return (TRACEROUTE_ERROR);
     }
 
@@ -44,7 +44,7 @@ int init_socket4(t_traceroute *traceroute) {
         return (TRACEROUTE_ERROR);
     }
 
-    if (setsockopt(traceroute->traceroute_socket.socket, SOL_SOCKET, SO_RCVTIMEO, &(struct timeval){TRACEROUTE_DEFAULT_TIMEOUT, 0}, sizeof(struct timeval)) < 0) {
+    if (setsockopt(traceroute->traceroute_socket.socket, SOL_SOCKET, SO_RCVTIMEO, &(struct timeval){0, TRACEROUTE_DEFAULT_TIMEOUT}, sizeof(struct timeval)) < 0) {
         close(traceroute->traceroute_socket.socket);
         freeaddrinfo(res);
         logger->log(E_LOG_ERROR, true, "setsockopt: %d\n", errno);
@@ -86,7 +86,7 @@ int init_socket6(t_traceroute *traceroute) {
     hints.ai_family = AF_INET6;
 
     if (getaddrinfo(traceroute->traceroute_data.hostname, service, &hints, &res) != 0) {
-        logger->log(E_LOG_ERROR, true, "getaddrinfo: %s: %s\n", traceroute->traceroute_data.hostname, gai_strerror(errno));
+        logger->log(E_LOG_ERROR, true, "getaddrinfo: %s: %s\n", traceroute->traceroute_data.hostname, "error");
         return (TRACEROUTE_ERROR);
     }
 
@@ -106,7 +106,7 @@ int init_socket6(t_traceroute *traceroute) {
         return (TRACEROUTE_ERROR);
     }
 
-    if (setsockopt(traceroute->traceroute_socket.socket, SOL_SOCKET, SO_RCVTIMEO, &(struct timeval){TRACEROUTE_DEFAULT_TIMEOUT, 0}, sizeof(struct timeval)) < 0) {
+    if (setsockopt(traceroute->traceroute_socket.socket, SOL_SOCKET, SO_RCVTIMEO, &(struct timeval){0, TRACEROUTE_DEFAULT_TIMEOUT}, sizeof(struct timeval)) < 0) {
         freeaddrinfo(res);
         close(traceroute->traceroute_socket.socket);
         logger->log(E_LOG_DEBUG, true, "hostname: %s\n", traceroute->traceroute_data.hostname);

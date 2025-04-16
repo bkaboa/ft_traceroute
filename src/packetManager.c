@@ -28,7 +28,7 @@ void forge_udp_packet(t_traceroute *traceroute)
     gettimeofday(tv, NULL);
 }
 
-void forge_icmp4_packet(t_traceroute *traceroute)
+int forge_icmp4_packet(t_traceroute *traceroute, struct sockaddr *addr)
 {
     t_traceroute_icmp_packet_send_4 *packet = (t_traceroute_icmp_packet_send_4 *)traceroute->packet_send;
     struct timeval *tv = &packet->tv;
@@ -38,9 +38,20 @@ void forge_icmp4_packet(t_traceroute *traceroute)
     gettimeofday(tv, NULL);
     packet->icmp.checksum = 0;
     packet->icmp.checksum = checksum((unsigned short *)&packet->icmp, sizeof(t_traceroute_icmp_packet_send_4));
+    struct sockaddr_in send_addr = *((struct sockaddr_in*)&traceroute->traceroute_socket.addr->ai_addr);
+    send_addr.sin_family = AF_INET;
+    if (traceroute->traceroute_data.option & E_UDP) {
+        send_addr.sin_port = htons(traceroute->traceroute_data.port_number);
+    }
+    else {
+        send_addr.sin_port = 0;
+    }
+    send_addr.sin_addr.s_addr = inet_addr(traceroute->traceroute_data.ip);
+    *addr = (*(struct sockaddr *)&send_addr);
+    return (sizeof(struct sockaddr_in));
 }
 
-void forge_icmp6_packet(t_traceroute *traceroute)
+int forge_icmp6_packet(t_traceroute *traceroute, struct sockaddr *addr)
 {
     t_traceroute_icmp_packet_send_6 *packet = (t_traceroute_icmp_packet_send_6*)traceroute->packet_send;
     struct timeval *tv = &packet->tv;
@@ -50,6 +61,17 @@ void forge_icmp6_packet(t_traceroute *traceroute)
     packet->icmp.icmp6_cksum = 0;
     packet->icmp.icmp6_cksum = checksum((unsigned short *)&packet->icmp, sizeof(t_traceroute_icmp_packet_send_6));
     traceroute->traceroute_data.seq++;
+    struct sockaddr_in6 send_addr = *((struct sockaddr_in6*)&traceroute->traceroute_socket.addr->ai_addr);
+    send_addr.sin6_family = AF_INET6;
+    if (traceroute->traceroute_data.option & E_UDP) {
+        send_addr.sin6_port = htons(traceroute->traceroute_data.port_number);
+    }
+    else {
+        send_addr.sin6_port = 0;
+    }
+    inet_pton(AF_INET6, traceroute->traceroute_data.ip, &send_addr.sin6_addr);
+    *addr = (*(struct sockaddr *)&send_addr);
+    return (sizeof(struct sockaddr_in6));
 }
 
 socklen_t init_packet(t_traceroute *traceroute, t_traceroute_routine *routine)
@@ -78,7 +100,7 @@ socklen_t init_packet(t_traceroute *traceroute, t_traceroute_routine *routine)
     }
     else if (traceroute->traceroute_data.option & E_UDP) {
         t_traceroute_udp_packet_send packet = {0};
-        routine->forge_packet = forge_udp_packet;
+        // routine->forge_packet = forge_udp_packet;
         ft_memset(packet.data, 'A', TRACEROUTE_DEFAULT_PACKET_SIZE);
         gettimeofday(&packet.tv, NULL);
         ft_memcpy(traceroute->packet_send, &packet, sizeof(t_traceroute_udp_packet_send));

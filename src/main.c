@@ -24,5 +24,5 @@ int main(int argc, char *argv[]) {
         }
     }
     traceroute_routine(&traceroute);
-    freeaddrinfo(traceroute.traceroute_socket.addr);
+    // freeaddrinfo(traceroute.traceroute_socket.addr);
 }
